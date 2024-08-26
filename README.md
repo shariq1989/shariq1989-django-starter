@@ -1,3 +1,72 @@
+## Setting Up a New VPS
+
+- SSH into the VPS
+- Create SSH key
+```shell
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"```
+```
+- Copy the key
+```shell
+cat ~/.ssh/id_rsa.pub
+```
+- Copy the key
+```shell
+cat ~/.ssh/id_rsa.pub
+```
+- Update and upgrade the system
+```shell
+sudo apt update && sudo apt upgrade -y
+```
+- Update and upgrade the system
+```shell
+sudo apt install -y docker.io docker-compose
+```
+
+- Create Development dir
+```shell
+mkdir development
+```
+
+- Clone repo
+```shell
+git clone {repo_url}
+```
+
+- Set up SSL with Certbot (optional, comment out if not using SSL)
+```shell
+sudo apt install -y certbot python3-certbot-nginx
+```
+
+- Move docker-compose for prod
+- Move env file for prod
+```shell
+➜  ~ scp ~/Documents/Development/shariq1989-django-starter/{docker-compose-for-prod.yml} root@root@165.227.205.174:~/
+~ scp ~/Documents/Development/shariq1989-django-starter/{dot env} root@root@165.227.205.174:~/
+```
+
+- Start container
+```shell
+➜  ~ sudo docker-compose -f docker-compose-prod.yml up --build -d
+```
+
+- Generate a new django key and update prod dockerfile
+```python
+import secrets
+print(secrets.token_urlsafe(50))
+```
+
+- Stop existing nginx service because it'll collide with docker
+```shell
+sudo systemctl stop nginx
+```
+
+- Run prod container
+```shell
+docker-compose -f docker-compose-prod.yml up -d --build
+```
+
+
+
 ### Useful commands
 
 ## Management Commands
