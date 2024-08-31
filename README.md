@@ -1,14 +1,5 @@
 ## Setting Up a New Project
-- Create a New Repository
-1. Go to your "shariq1989-django-starter" repository on GitHub.
-2. Click on the "Use this template" button near the top-right of the page.
-3. Choose a name for your new project and create the repository.
-
-- Clone the New Repository
-```bash
-git clone https://github.com/yourusername/your-new-project.git
-cd your-new-project
-```
+Run new-project.sh in a directory where you want to create the project folder.
 
 ## Setting Up a New VPS
 - SSH into the VPS
