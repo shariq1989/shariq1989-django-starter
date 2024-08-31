@@ -1,13 +1,20 @@
-## Setting Up a New VPS
+## Setting Up a New Project
+- Create a New Repository
+1. Go to your "shariq1989-django-starter" repository on GitHub.
+2. Click on the "Use this template" button near the top-right of the page.
+3. Choose a name for your new project and create the repository.
 
+- Clone the New Repository
+```bash
+git clone https://github.com/yourusername/your-new-project.git
+cd your-new-project
+```
+
+## Setting Up a New VPS
 - SSH into the VPS
 - Create SSH key
 ```shell
-ssh-keygen -t rsa -b 4096 -C "your_email@example.com"```
-```
-- Copy the key
-```shell
-cat ~/.ssh/id_rsa.pub
+ssh-keygen -t rsa -b 4096"```
 ```
 - Copy the key
 ```shell
@@ -21,53 +28,45 @@ sudo apt update && sudo apt upgrade -y
 ```shell
 sudo apt install -y docker.io docker-compose
 ```
-
 - Create Development dir
 ```shell
 mkdir development
 ```
-
 - Clone repo
 ```shell
 git clone {repo_url}
 ```
-
 - Set up SSL with Certbot (optional, comment out if not using SSL)
 ```shell
 sudo apt install -y certbot python3-certbot-nginx
 ```
-
 - Move docker-compose for prod
 - Move env file for prod
 ```shell
 ~ scp ~/Documents/Development/shariq1989-django-starter/{docker-compose-for-prod.yml} root@root@165.227.205.174:~/
 ~ scp ~/Documents/Development/shariq1989-django-starter/{dot env} root@root@165.227.205.174:~/
 ```
-
 - Start container
 ```shell
 ➜  ~ sudo docker-compose -f docker-compose-prod.yml up --build -d
 ```
-
 - Stop container
 ```shell
 ➜  ~ docker-compose down --remove-orphans
 ```
-
 - Generate a new django key and update prod dockerfile
 ```python
 import secrets
 print(secrets.token_urlsafe(50))
 ```
-
+### Domain Configuration
 - Add records to domain registrar
   - A, @, IP.Address, Automatic
-  - CNAME, www, url.com, Automatic 
-
+  - CNAME, www, url.com, Automatic
 - Update URL in 
   - {repo}/nginx/nginx.conf
   - ALLOWED_HOSTS in docker-compose-prod.yml
-
+### SSL Configuration
 - SSL (run commands on HOST machine, not in a container!)
 ```shell
 apt-get update
@@ -77,7 +76,7 @@ docker-compose down
 sudo certbot --nginx -d pushmypost.com -d www.pushmypost.com
 ```
 
-- SSL continued. Update docker-compose-prod (nginx block)
+- Update docker-compose-prod.yml
 ```yml
 nginx:
   # ... other configurations ...
@@ -90,7 +89,7 @@ nginx:
     - "443:443"
 ```
 
-- Update your Nginx configuration file (in your ./nginx directory) to use the new SSL certificates
+- Update Nginx configuration In {repo}/nginx/nginx.conf:
 ```text
 server {
     listen 80;
@@ -104,15 +103,15 @@ server {
 
     ssl_certificate /etc/letsencrypt/live/pushmypost.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/pushmypost.com/privkey.pem;
-...
+    # ... rest of your SSL configuration ...
 ```
 
-- Start the docker containers. If there are issues saying 443 is already in use, those processes need to be killed. 
-- Nginx needs to be prevented from starting automatically
+- If port 443 is already in use, you may need to identify and stop the process using it
 ```shell
+sudo lsof -i :443
+sudo kill -9 {PID}
 sudo systemctl disable nginx && sudo systemctl stop nginx
 ```
-
 
 ### Useful commands
 
