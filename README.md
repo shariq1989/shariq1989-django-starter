@@ -40,7 +40,7 @@ sudo apt install -y certbot python3-certbot-nginx
 - Move docker-compose for prod
 - Move env file for prod
 ```shell
-➜  ~ scp ~/Documents/Development/shariq1989-django-starter/{docker-compose-for-prod.yml} root@root@165.227.205.174:~/
+~ scp ~/Documents/Development/shariq1989-django-starter/{docker-compose-for-prod.yml} root@root@165.227.205.174:~/
 ~ scp ~/Documents/Development/shariq1989-django-starter/{dot env} root@root@165.227.205.174:~/
 ```
 
@@ -49,22 +49,69 @@ sudo apt install -y certbot python3-certbot-nginx
 ➜  ~ sudo docker-compose -f docker-compose-prod.yml up --build -d
 ```
 
+- Stop container
+```shell
+➜  ~ docker-compose down --remove-orphans
+```
+
 - Generate a new django key and update prod dockerfile
 ```python
 import secrets
 print(secrets.token_urlsafe(50))
 ```
 
-- Stop existing nginx service because it'll collide with docker
+- Add records to domain registrar
+  - A, @, IP.Address, Automatic
+  - CNAME, www, url.com, Automatic 
+
+- Update URL in 
+  - {repo}/nginx/nginx.conf
+  - ALLOWED_HOSTS in docker-compose-prod.yml
+
+- SSL (run commands on HOST machine, not in a container!)
 ```shell
-sudo systemctl stop nginx
+apt-get update
+apt-get install -y certbot python3-certbot-nginx
+# Stop your Docker containers temporarily:
+docker-compose down
+sudo certbot --nginx -d pushmypost.com -d www.pushmypost.com
 ```
 
-- Run prod container
-```shell
-docker-compose -f docker-compose-prod.yml up -d --build
+- SSL continued. Update docker-compose-prod (nginx block)
+```yml
+nginx:
+  # ... other configurations ...
+  volumes:
+    - ./nginx:/etc/nginx/conf.d
+    - /etc/letsencrypt:/etc/letsencrypt:ro
+    - /var/lib/letsencrypt:/var/lib/letsencrypt
+  ports:
+    - "80:80"
+    - "443:443"
 ```
 
+- Update your Nginx configuration file (in your ./nginx directory) to use the new SSL certificates
+```text
+server {
+    listen 80;
+    server_name pushmypost.com www.pushmypost.com;
+    return 301 https://$server_name$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name pushmypost.com www.pushmypost.com;
+
+    ssl_certificate /etc/letsencrypt/live/pushmypost.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/pushmypost.com/privkey.pem;
+...
+```
+
+- Start the docker containers. If there are issues saying 443 is already in use, those processes need to be killed. 
+- Nginx needs to be prevented from starting automatically
+```shell
+sudo systemctl disable nginx && sudo systemctl stop nginx
+```
 
 
 ### Useful commands
