@@ -34,16 +34,16 @@ sudo apt install -y certbot python3-certbot-nginx
 - Move docker-compose for prod
 - Move env file for prod
 ```shell
-~ scp ~/Documents/Development/shariq1989-django-starter/{docker-compose-for-prod.yml} root@root@165.227.205.174:~/
-~ scp ~/Documents/Development/shariq1989-django-starter/{dot env} root@root@165.227.205.174:~/
+scp ~/Documents/Development/shariq1989-django-starter/{docker-compose-for-prod.yml} root@165.227.205.174:~/
+scp ~/Documents/Development/shariq1989-django-starter/{dot env} root@165.227.205.174:~/
 ```
 - Start container
 ```shell
-➜  ~ sudo docker-compose -f docker-compose-prod.yml up --build -d
+sudo docker-compose -f docker-compose-prod.yml up --build -d
 ```
 - Stop container
 ```shell
-➜  ~ docker-compose down --remove-orphans
+docker-compose down --remove-orphans
 ```
 - Generate a new django key and update prod dockerfile
 ```python

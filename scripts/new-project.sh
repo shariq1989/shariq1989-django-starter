@@ -14,7 +14,7 @@ TEMPLATE_PATH="$HOME/Documents/Development/shariq1989-django-starter"  # Update 
 # Create new project directory
 echo "Creating new project directory: $PROJECT_NAME"
 mkdir "$PROJECT_NAME"
-cd "$PROJECT_NAME" || exit
+cd "$PROJECT_NAME" || exit 1
 
 # Copy template contents using rsync to avoid copying . and ..
 echo "Copying template contents..."
